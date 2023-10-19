@@ -5,10 +5,12 @@
 
 * project starter commands
     * ```npx create-next-app@latest```
+* dev server startup command
+    * ```npm run dev```
 
 <hr />
  This repo has some sample projects developed as part of learning
- 
+
 #### App 01
 
 ![app1](sample-nextjs-app1/public/SampleScreen.png)
