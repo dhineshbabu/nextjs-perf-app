@@ -5,8 +5,10 @@ import EventList from '../../components/events/event-list';
 import ResultsTitle from '../../components/events/results-title';
 import Button from '../../components/ui/button';
 import ErrorAlert from '../../components/ui/error-alert';
+import Head from 'next/head';
 
-const FilteredEventsPage = () => {
+
+const FilteredEventsPage = (props) => {
   const router = useRouter();
   const filterData = router.query.slug;
 
@@ -21,12 +23,7 @@ const FilteredEventsPage = () => {
   const numMonth = +filteredMonth;
 
   if (
-    isNaN(numYear) ||
-    isNaN(numMonth) ||
-    numYear > 2030 ||
-    numYear < 2021 ||
-    numMonth < 1 ||
-    numMonth > 12
+    props.hasError
   ) {
     return (
       <Fragment>
@@ -62,10 +59,52 @@ const FilteredEventsPage = () => {
 
   return (
     <Fragment>
+       <Head>
+        <title>Filtered Events</title>
+        <meta 
+        name='description'
+        content={`All events for ${numMonth}/${numYear}`}/>
+      </Head>
       <ResultsTitle date={date} />
       <EventList items={filteredEvents}></EventList>
     </Fragment>
   );
 };
 
+export async function getServerSideProps(context) {
+  const { params } = context;
+
+  const filterData = params.slug;
+
+  const filteredYear = filterData[0];
+  const filteredMonth = filterData[1];
+
+  const numYear = +filteredYear;
+  const numMonth = +filteredMonth;
+
+  if (
+    isNaN(numYear) ||
+    isNaN(numMonth) ||
+    numYear > 2030 ||
+    numYear < 2021 ||
+    numMonth < 1 ||
+    numMonth > 12
+  ) {
+    return {
+      props: {
+        hasError: true
+      }
+      // notFound: true,
+    };
+  }
+
+  const filteredEvents = getFilteredEvents({
+    year: numYear,
+    month: numMonth,
+  });
+
+  return {
+    props: {},
+  };
+}
 export default FilteredEventsPage;
